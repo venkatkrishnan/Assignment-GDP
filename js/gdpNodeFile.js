@@ -251,7 +251,7 @@ var COUNTRIES= ['Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina', 'Burundi',
 var fs = require('fs');
 
 var rd = require('readline').createInterface({
-    input: fs.createReadStream('WDI_Data.csv')
+    input: fs.createReadStream('../csv/WDI_Data.csv')
 });
 
 var africa;
@@ -331,11 +331,11 @@ rd.on('line', function(line) {
     //problem statement 1
     gdpBarChart=sortArray(gdp, gni, "gdp", "gni");
     gdpPerCapitaBarChart=sortArray(gdpPerCapita, gniPerCapita, "gdppercapita", "gnipercapita");
-    write('json/gdpBarChart.json', gdpBarChart);
-    write('json/gdpPerCapitaBarChart.json', gdpPerCapitaBarChart);
+    write('../json/gdpBarChart.json', gdpBarChart);
+    write('../json/gdpPerCapitaBarChart.json', gdpPerCapitaBarChart);
 
     //problem statement 2
-    write('json/gdpIndia.json', gdpIndia);
+    write('../json/gdpIndia.json', gdpIndia);
 
     //problem statement 3
     for(i in heading) {
@@ -348,7 +348,7 @@ rd.on('line', function(line) {
         gdpContinent.push(json);
       }
     }
-    write('json/gdpContinent.json', gdpContinent);
+    write('../json/gdpContinent.json', gdpContinent);
 });
 
 function sortArray(sortObj, fetchObj, key1, key2) {
