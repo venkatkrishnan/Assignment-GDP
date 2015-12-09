@@ -2,6 +2,7 @@ var heading = new Array();
 var gdpIndia = [];
 var gdpContinent = [];
 var gdpBarChart = [];
+var gdpPerCapitaBarChart = [];
 
 var continents = {
   /* AFRICA */
@@ -211,6 +212,42 @@ var continents = {
   'Venezuela' : 'S_AMERICA'
 };
 
+var COUNTRIES= ['Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina', 'Burundi',
+'Cameroon', 'Cape Verde', 'Central African Republic', 'Chad', 'Comoros',
+'Congo', 'Congo', ' Democratic Republic of', 'Djibouti', 'Egypt',
+'Equatorial Guinea', 'Eritrea', 'Ethiopia', 'Gabon', 'Gambia', 'Ghana',
+'Guinea', 'Guinea-Bissau', 'Ivory Coast', 'Kenya', 'Lesotho', 'Liberia',
+'Libya', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius', 'Morocco',
+'Mozambique', 'Namibia', 'Niger', 'Nigeria', 'Rwanda', 'Sao Tome and Principe',
+'Senegal', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Africa',
+'South Sudan', 'Sudan', 'Swaziland', 'Tanzania', 'Togo', 'Tunisia', 'Uganda',
+'Zambia', 'Zimbabwe', 'Afghanistan', 'Bahrain', 'Bangladesh', 'Bhutan', 'Brunei',
+'Burma (Myanmar)', 'Cambodia', 'China', 'East Timor', 'India',
+'Indonesia', 'Iran', 'Iraq', 'Israel', 'Japan', 'Jordan', 'Kazakhstan',
+'North Korea', 'South Korea', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Lebanon',
+'Malaysia', 'Maldives', 'Mongolia', 'Nepal', 'Oman', 'Pakistan', 'Philippines',
+'Qatar', 'Russian Federation', 'Saudi Arabia', 'Singapore', 'Sri Lanka',
+'Syria', 'Tajikistan', 'Thailand', 'Turkey', 'Turkmenistan',
+'United Arab Emirates', 'Uzbekistan', 'Vietnam', 'Yemen', 'Albania', 'Andorra',
+'Armenia', 'Austria', 'Azerbaijan', 'Belarus',
+'Belgium', 'Bosnia and Herzegovina', 'Bulgaria', 'Croatia', 'Cyprus',
+'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Georgia',
+'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia',
+'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Malta', 'Moldova',
+'Monaco', 'Montenegro', 'Netherlands', 'Norway', 'Poland', 'Portugal',
+'Romania', 'San Marino', 'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Sweden',
+'Switzerland', 'Ukraine', 'United Kingdom', 'Vatican City',
+'Antigua and Barbuda', 'Bahamas', 'Barbados', 'Belize', 'Canada',
+'Costa Rica', 'Cuba', 'Dominica', 'Dominican Republic', 'El Salvador',
+'Grenada', 'Guatemala', 'Haiti', 'Honduras', 'Jamaica', 'Mexico', 'Nicaragua',
+'Panama', 'Saint Kitts and Nevis', 'Saint Lucia',
+'Saint Vincent and the Grenadines', 'Trinidad and Tobago', 'United States',
+'Australia', 'Fiji', 'Kiribati', 'Marshall Islands', 'Micronesia',
+'Nauru', 'New Zealand', 'Palau', 'Papua New Guinea', 'Samoa',
+'Solomon Islands', 'Tonga', 'Tuvalu', 'Vanuatu', 'Argentina', 'Bolivia',
+'Brazil', 'Chile', 'Colombia', 'Ecuador',
+'Guyana', 'Paraguay', 'Peru', 'Suriname', 'Uruguay', 'Venezuela'];
+
 var fs = require('fs');
 
 var rd = require('readline').createInterface({
@@ -238,8 +275,6 @@ var gni = new Array();
 var gdpPerCapita = new Array();
 var gniPerCapita = new Array();
 
-var countries = new Array();
-
 rd.on('line', function(line) {
     var arr = line.split(",");
     var lineLength = arr.length;
@@ -258,95 +293,88 @@ rd.on('line', function(line) {
       }
     } else {
 
-      //problem statement 1
-      for(i in continents) {
-        if(i === arr[posCountryName]) {
-          if(countries.indexOf(arr[posCountryName]) < 0) {
-            countries.push(arr[posCountryName]);
-          }
-
-          if(arr[posIndicatorName]==="GDP (constant 2005 US$)") {
-            gdp.push(parseFloat(arr[pos2005]));
-          } else if(arr[posIndicatorName]==="GNI (constant 2005 US$)") {
-            gni.push(parseFloat(arr[pos2005]));
-          } else if(arr[posIndicatorName]==="GDP per capita (constant 2005 US$)") {
-            gdpPerCapita.push(parseFloat(arr[pos2005]));
-          } else if(arr[posIndicatorName]==="GNI per capita (constant 2005 US$)") {
-            gniPerCapita.push(parseFloat(arr[pos2005]));
-          }
-
+      if(COUNTRIES.indexOf(arr[posCountryName]) > -1 ) {
+        //problem statement 1
+        switch(arr[posIndicatorName]) {
+          case "GDP (constant 2005 US$)":
+            gdp[arr[posCountryName]] = parseFloat(arr[pos2005]);
+          break;
+          case "GNI (constant 2005 US$)":
+            gni[arr[posCountryName]] = parseFloat(arr[pos2005]);
+          break;
+          case "GDP per capita (constant 2005 US$)":
+            gdpPerCapita[arr[posCountryName]] = parseFloat(arr[pos2005]);
+          break;
+          case "GNI per capita (constant 2005 US$)":
+            gniPerCapita[arr[posCountryName]] = parseFloat(arr[pos2005]);
           break;
         }
-      }
 
-      //problem statement 2
-      var json = {};
-      if(arr[posCountryName] === "India" && arr[posIndicatorName] === "GDP growth (annual %)") {
-        for(var i=4; i<arr.length; i++) {
-          json[heading[i]] = parseFloat(arr[i]);
+        //problem statement 2
+        if(arr[posCountryName] === "India" && arr[posIndicatorName] === "GDP growth (annual %)") {
+          for(var i=4; i<arr.length; i++) {
+            var json = {};
+            json["year"] = heading[i];
+            json["value"] = parseFloat(arr[i]);
+            gdpIndia.push(json);
+          }
         }
-        gdpIndia.push(json);
-      }
 
-      //problem statement 3
-      if(arr[posIndicatorName] === "GDP per capita (constant 2005 US$)") {
-        setContinentLists[continents[arr[posCountryName]]] = continentSum(setContinentLists[continents[arr[posCountryName]]], arr);
+        //problem statement 3
+        if(arr[posIndicatorName] === "GDP per capita (constant 2005 US$)") {
+          setContinentLists[continents[arr[posCountryName]]] = continentSum(setContinentLists[continents[arr[posCountryName]]], arr);
+        }
       }
     }
 }).on('close', function() {
 
     //problem statement 1
-    for(var i=0; i<gdp.length; i++) {
-      for(var j=0; j<gdp.length-i-1; j++) {
-        if(gdp[j]<gdp[j+1]) {
-          var swap = gdp[j];
-          gdp[j]=gdp[j+1];
-          gdp[j+1]=swap;
-
-          swap = gni[j];
-          gni[j]=gni[j+1];
-          gni[j+1]=swap;
-
-          swap = gdpPerCapita[j];
-          gdpPerCapita[j]=gdpPerCapita[j+1];
-          gdpPerCapita[j+1]=swap;
-
-          swap = gniPerCapita[j];
-          gniPerCapita[j]=gniPerCapita[j+1];
-          gniPerCapita[j+1]=swap;
-
-          var ch = countries[j];
-          countries[j]=countries[j+1];
-          countries[j+1]=ch;
-        }
-      }
-    }
-
-    var jsonGdp =  {};
-    var jsonGni = {};
-    var jsonGdpPerCapita = {};
-    var jsonGniPerCapita = {};
-    for(var i=0; i<gdp.length && i<15; i++) {
-      jsonGdp[countries[i]] = gdp[i];
-      jsonGni[countries[i]] = gni[i];
-      jsonGdpPerCapita[countries[i]] = gdpPerCapita[i];
-      jsonGniPerCapita[countries[i]] = gniPerCapita[i];
-    }
-    gdpBarChart.push(jsonGdp);
-    gdpBarChart.push(jsonGni);
-    gdpBarChart.push(jsonGdpPerCapita);
-    gdpBarChart.push(jsonGniPerCapita);
-
+    gdpBarChart=sortArray(gdp, gni, "gdp", "gni");
+    gdpPerCapitaBarChart=sortArray(gdpPerCapita, gniPerCapita, "gdppercapita", "gnipercapita");
     write('json/gdpBarChart.json', gdpBarChart);
+    write('json/gdpPerCapitaBarChart.json', gdpPerCapitaBarChart);
 
     //problem statement 2
     write('json/gdpIndia.json', gdpIndia);
 
     //problem statement 3
-    for(i in setContinentLists)
-      setHeaderForContinent(setContinentLists[i], i);
+    for(i in heading) {
+      if(i > 3) {
+        var json = {};
+        json["year"] = heading[i];
+        for(j in setContinentLists) {
+          json[j] = setContinentLists[j][i];
+        }
+        gdpContinent.push(json);
+      }
+    }
     write('json/gdpContinent.json', gdpContinent);
 });
+
+function sortArray(sortObj, fetchObj, key1, key2) {
+  var sortedGdp = new Array();
+  for (key in sortObj) {
+      var temp = new Object();
+      temp["key"] = key;
+      temp["value"] = sortObj[key];
+      sortedGdp.push(temp);
+  }
+
+  sortedGdp.sort(
+    function(a, b) {
+      return b.value - a.value;
+    });
+
+  var writeObj = [];
+  for(var i=0; i<15; i++) {
+    var jsonGdp = {};
+    jsonGdp["country"] = sortedGdp[i].key;
+    jsonGdp[key1] = sortedGdp[i].value;
+    jsonGdp[key2] = fetchObj[sortedGdp[i].key];
+    writeObj.push(jsonGdp);
+  }
+  return writeObj;
+}
 
 function continentSum(continentObj, arr) {
   if(continentObj == null) {
@@ -361,23 +389,7 @@ function continentSum(continentObj, arr) {
   return continentObj;
 }
 
-function setHeaderForContinent(continent, continentName) {
-
-  if(continentName == 'undefined') {
-    return;
-  }
-  
-  var json = {};
-  json["Continent Name"] = continentName;
-
-  for(var i=4; i<continent.length; i++) {
-    json[heading[i]] = continent[i];
-  }
-  gdpContinent.push(json);
-}
-
 function write(fileName, fromArray) {
-
   var fromArray1 = JSON.stringify(fromArray);
   fs.writeFile(fileName, fromArray1, function (err) {
     if (err) return console.log(err);
