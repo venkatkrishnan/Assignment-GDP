@@ -47,7 +47,7 @@
       .append("text")
       .attr("transform", "rotate(0)")
       .attr("x", 1)
-      .attr("dx", "175em")
+      .attr("dx", "176em")
       .style("text-anchor", "end")
       .text("Year");
 

@@ -1,4 +1,4 @@
-var margin = {top: 20, right: 20, bottom: 30, left: 80},
+var margin = {top: 20, right: 20, bottom: 100, left: 80},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -45,7 +45,10 @@ d3.json("json/gdpPerCapitaBarChart.json", function(error, data) {
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("transform", "rotate(-65)");
 
   svg.append("g")
       .attr("class", "y axis")
