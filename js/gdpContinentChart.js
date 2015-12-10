@@ -37,7 +37,7 @@ d3.json("json/gdpContinent.json", function(error, data) {
     d.total = d.values[d.values.length - 1].y1;
   });
 
-  data.sort(function(a, b) { return b.total - a.total; });
+//  data.sort(function(a, b) { return b.total - a.total; });
 
   x.domain(data.map(function(d) { return d.year; }));
   y.domain([0, d3.max(data, function(d) { return d.total; })]);
@@ -80,7 +80,7 @@ d3.json("json/gdpContinent.json", function(error, data) {
       .data(color.domain().slice().reverse())
     .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(-1200," + i * 20 + ")"; });
 
   legend.append("rect")
       .attr("x", width - 18)
